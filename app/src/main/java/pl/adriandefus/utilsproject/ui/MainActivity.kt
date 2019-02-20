@@ -8,8 +8,6 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import pl.adriandefus.utilsproject.R
 import pl.adriandefus.utilsproject.di.viewmodel.UtilsViewModelFactory
-import pl.adriandefus.utilsproject.presenter.AnimationStatus
-import pl.adriandefus.utilsproject.presenter.MainViewModel
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {

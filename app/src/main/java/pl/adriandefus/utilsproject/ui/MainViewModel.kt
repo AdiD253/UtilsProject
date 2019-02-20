@@ -1,4 +1,4 @@
-package pl.adriandefus.utilsproject.presenter
+package pl.adriandefus.utilsproject.ui
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
