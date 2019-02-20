@@ -3,7 +3,10 @@ package pl.adriandefus.utilsproject.ui
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 import pl.adriandefus.utilsproject.ResourceProvider
+import pl.adriandefus.utilsproject.ui.Status.*
+import pl.adriandefus.utilsproject.util.post
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -14,24 +17,26 @@ class MainViewModel @Inject constructor(
     val animationStatus: LiveData<AnimationStatus>
         get() = _animationStatus
 
-    private val _statusInfo = MutableLiveData<String>()
-    val statusInfo: LiveData<String>
-        get() = _statusInfo
-
     fun toggleAnimation() {
-        when (animationStatus.value) {
-            AnimationStatus.ACTIVE -> {
-                _animationStatus.value = AnimationStatus.INACTIVE
-                _statusInfo.value = resourceProvider.strings.getAnimInactive()
-            }
-            else -> {
-                _animationStatus.value = AnimationStatus.ACTIVE
-                _statusInfo.value = resourceProvider.strings.getAnimActive()
-            }
+        when (_animationStatus.value?.status) {
+            ACTIVE -> _animationStatus post
+                    AnimationStatus(INACTIVE, resourceProvider.strings.getAnimInactive())
+            else -> _animationStatus post
+                    AnimationStatus(ACTIVE, resourceProvider.strings.getAnimActive())
         }
+    }
+
+    override fun onCleared() {
+        Log.d("UTILS", resourceProvider.strings.getOnCleared())
+        super.onCleared()
     }
 }
 
-enum class AnimationStatus {
+class AnimationStatus(
+    val status: Status,
+    val statusInfo: String
+)
+
+enum class Status {
     ACTIVE, INACTIVE
 }

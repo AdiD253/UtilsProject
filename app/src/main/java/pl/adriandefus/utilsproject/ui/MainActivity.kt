@@ -15,30 +15,27 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: UtilsViewModelFactory
 
-    lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
-        initObservers()
+        initVM()
 
         helloWorldButton.setOnClickListener {
             viewModel.toggleAnimation()
         }
     }
 
-    private fun initObservers() {
-        viewModel.animationStatus.observe(this, Observer {
-            when (it) {
-                AnimationStatus.ACTIVE -> lottieView.resumeAnimation()
-                AnimationStatus.INACTIVE -> lottieView.pauseAnimation()
-            }
-        })
+    private fun initVM() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
-        viewModel.statusInfo.observe(this, Observer {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        viewModel.animationStatus.observe(this, Observer {
+            when (it?.status) {
+                Status.ACTIVE -> lottieView.resumeAnimation()
+                Status.INACTIVE -> lottieView.pauseAnimation()
+            }
+            Toast.makeText(this, it?.statusInfo, Toast.LENGTH_SHORT).show()
         })
     }
 }

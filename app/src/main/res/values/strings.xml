@@ -4,4 +4,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="anim_active">Animation active</string>
     <string name="anim_inactive">Animation inactive</string>
+    <string name="on_cleared">ViewModel: OnCleared</string>
 </resources>
