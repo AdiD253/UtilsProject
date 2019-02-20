@@ -1,4 +1,4 @@
-package pl.adriandefus.utilsproject
+package pl.adriandefus.utilsproject.ui
 
 interface MainView {
 

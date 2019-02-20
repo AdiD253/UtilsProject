@@ -2,4 +2,6 @@
     <string name="app_name">UtilsProject</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="anim_active">Animation active</string>
+    <string name="anim_inactive">Animation inactive</string>
 </resources>
