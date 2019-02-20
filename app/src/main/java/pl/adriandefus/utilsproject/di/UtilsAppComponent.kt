@@ -5,6 +5,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule
 import pl.adriandefus.utilsproject.UtilsApp
+import pl.adriandefus.utilsproject.di.module.ActivityBindingModule
 import pl.adriandefus.utilsproject.di.module.AppModule
 import pl.adriandefus.utilsproject.di.module.ViewModelModule
 import javax.inject.Singleton
@@ -13,6 +14,7 @@ import javax.inject.Singleton
 @Component(modules = [
     AndroidSupportInjectionModule::class,
     AppModule::class,
+    ActivityBindingModule::class,
     ViewModelModule::class
 ])
 interface UtilsAppComponent {
