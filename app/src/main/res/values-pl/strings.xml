@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello_world">Witaj świecie!</string>
+    <string name="anim_active">Animacja aktywna</string>
+    <string name="anim_inactive">Animacja nieaktywna</string>
+</resources>
