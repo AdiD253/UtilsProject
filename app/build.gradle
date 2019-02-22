@@ -3,9 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "org.jlleitschuh.gradle.ktlint"
+apply plugin: 'kotlin-allopen'
 
 android {
     compileSdkVersion 28
+    testOptions.unitTests.includeAndroidResources = true
     defaultConfig {
         applicationId "pl.adriandefus.utilsproject"
         minSdkVersion 21
@@ -20,6 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+allOpen {
+    annotation 'pl.adriandefus.utilsproject.util.OpenForTesting'
 }
 
 dependencies {
@@ -50,8 +56,14 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$rootProject.dagger_version"
 
     testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:2.18.3"
+    testImplementation "android.arch.core:core-testing:1.1.1"
+    testImplementation 'org.robolectric:robolectric:4.2'
+
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'org.mockito:mockito-android:2.7.22'
 }
 
 kapt {
