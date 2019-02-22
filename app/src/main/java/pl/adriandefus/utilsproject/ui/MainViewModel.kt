@@ -3,7 +3,7 @@ package pl.adriandefus.utilsproject.ui
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.util.Log
+import android.support.annotation.VisibleForTesting
 import pl.adriandefus.utilsproject.ResourceProvider
 import pl.adriandefus.utilsproject.ui.Status.*
 import pl.adriandefus.utilsproject.util.OpenForTesting
@@ -12,11 +12,11 @@ import javax.inject.Inject
 
 @OpenForTesting
 class MainViewModel @Inject constructor(
-    private val resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider
 ) : ViewModel() {
 
-    val ANIMATION_ACTIVE = AnimationStatus(ACTIVE, resourceProvider.strings.getAnimActive())
-    val ANIMATION_INACTIVE = AnimationStatus(INACTIVE, resourceProvider.strings.getAnimInactive())
+    val animationActive = AnimationStatus(ACTIVE, resourceProvider.strings.getAnimActive())
+    val animationInactive = AnimationStatus(INACTIVE, resourceProvider.strings.getAnimInactive())
 
     private val _animationStatus = MutableLiveData<AnimationStatus>()
     val animationStatus: LiveData<AnimationStatus>
@@ -24,18 +24,14 @@ class MainViewModel @Inject constructor(
 
     fun toggleAnimation() {
         when (_animationStatus.value?.status) {
-            ACTIVE -> _animationStatus post ANIMATION_INACTIVE
-            else -> _animationStatus post ANIMATION_ACTIVE
+            ACTIVE -> _animationStatus post animationInactive
+            else -> _animationStatus post animationActive
         }
     }
 
     override fun onCleared() {
-        onClearedFunc()
+        _animationStatus.postValue(null)
         super.onCleared()
-    }
-
-    fun onClearedFunc() {
-
     }
 }
 

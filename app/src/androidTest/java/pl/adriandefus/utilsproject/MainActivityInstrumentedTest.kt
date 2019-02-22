@@ -34,12 +34,17 @@ class MainActivityInstrumentedTest {
 
     @Test
     fun should_toggle_animation_on_anim_button_click() {
+        //given
         val lottieView = activityRule.activity.findViewById<LottieAnimationView>(R.id.lottieView)
 
+        //when
         onView(withId(R.id.helloWorldButton)).perform(click())
+        //then
         assertThat(lottieView.isAnimating, `is`(true))
 
+        //when
         onView(withId(R.id.helloWorldButton)).perform(click())
+        //then
         assertThat(lottieView.isAnimating, `is`(false))
     }
 

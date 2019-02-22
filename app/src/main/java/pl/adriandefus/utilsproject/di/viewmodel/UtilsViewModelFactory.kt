@@ -2,6 +2,7 @@ package pl.adriandefus.utilsproject.di.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import pl.adriandefus.utilsproject.util.OpenForTesting
 import javax.inject.Inject
 import javax.inject.Provider
 

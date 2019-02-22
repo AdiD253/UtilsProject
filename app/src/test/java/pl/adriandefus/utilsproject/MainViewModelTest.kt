@@ -3,8 +3,6 @@ package pl.adriandefus.utilsproject
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.Observer
 import android.content.Context
-import org.hamcrest.Matcher
-import org.hamcrest.MatcherAssert
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -15,10 +13,8 @@ import org.junit.runners.JUnit4
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import org.mockito.verification.VerificationMode
 import pl.adriandefus.utilsproject.ui.AnimationStatus
 import pl.adriandefus.utilsproject.ui.MainViewModel
-import pl.adriandefus.utilsproject.ui.Status
 
 @RunWith(JUnit4::class)
 class MainViewModelTest {
@@ -43,10 +39,9 @@ class MainViewModelTest {
     }
 
     @Test
-    fun should_get_active_order_string() {
-        val activeOrderString = "Animation active"
-
-        assertThat(activeOrderString, `is`(resourceProvider.strings.getAnimActive()))
+    fun should_resourceprovider_return_correct_values() {
+        assertThat(resourceProvider.strings.getAnimActive(), `is`(ANIM_ACTIVE))
+        assertThat(resourceProvider.strings.getAnimInactive(), `is`(ANIM_INACTIVE))
     }
 
     @Test
@@ -57,11 +52,10 @@ class MainViewModelTest {
         mainViewModel.animationStatus.observeForever(observer)
 
         mainViewModel.toggleAnimation()
-        verify(mainViewModel).animationStatus.value
-        verify(observer).onChanged(mainViewModel.ANIMATION_ACTIVE)
+        verify(observer).onChanged(mainViewModel.animationActive)
 
         mainViewModel.toggleAnimation()
-        verify(observer).onChanged(mainViewModel.ANIMATION_INACTIVE)
+        verify(observer).onChanged(mainViewModel.animationInactive)
 
         mainViewModel.animationStatus.removeObserver(observer)
     }

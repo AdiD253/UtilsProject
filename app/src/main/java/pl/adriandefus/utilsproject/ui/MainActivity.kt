@@ -31,9 +31,9 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
         viewModel.animationStatus.observe(this, Observer {
-            when (it?.status) {
-                Status.ACTIVE -> lottieView.resumeAnimation()
-                Status.INACTIVE -> lottieView.pauseAnimation()
+            when (it) {
+                viewModel.animationActive -> lottieView.resumeAnimation()
+                viewModel.animationInactive-> lottieView.pauseAnimation()
             }
             Toast.makeText(this, it?.statusInfo, Toast.LENGTH_SHORT).show()
         })
