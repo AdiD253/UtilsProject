@@ -14,13 +14,16 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "pl.adriandefus.utilsproject.runner.CustomTestRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -54,12 +57,28 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$rootProject.dagger_version"
     kapt "com.google.dagger:dagger-compiler:$rootProject.dagger_version"
+    kaptTest "com.google.dagger:dagger-compiler:$rootProject.dagger_version"
+
+    //ReactiveX
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJava_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rootProject.rxKotlin_version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroid_version"
+
+    //Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit_adapter_version"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit_adapter_version"
+    implementation "com.google.code.gson:gson:$rootProject.gson_version"
+
+    //OkHttp
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okHttp_version"
 
     testImplementation 'junit:junit:4.12'
     testImplementation "org.mockito:mockito-core:2.18.3"
     testImplementation "android.arch.core:core-testing:1.1.1"
     testImplementation 'org.robolectric:robolectric:4.2'
     testImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

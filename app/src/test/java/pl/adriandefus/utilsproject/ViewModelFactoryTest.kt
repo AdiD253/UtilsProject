@@ -1,14 +1,10 @@
 package pl.adriandefus.utilsproject
 
 import android.arch.lifecycle.ViewModel
-import android.content.Context
 import android.support.test.espresso.matcher.ViewMatchers.assertThat
 import org.hamcrest.CoreMatchers.isA
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import pl.adriandefus.utilsproject.ui.MainActivity
@@ -19,17 +15,6 @@ class ViewModelFactoryTest {
 
     private val activityController = Robolectric.buildActivity(MainActivity::class.java).setup()
     private val factory = activityController.get().viewModelFactory
-
-    private lateinit var resourceProvider: ResourceProvider
-
-    @Mock
-    private lateinit var context: Context
-
-    @Before
-    fun init() {
-        MockitoAnnotations.initMocks(this)
-        resourceProvider = ResourceProvider(context)
-    }
 
     @Test
     fun should_factory_create_MainViewModel() {

@@ -2,6 +2,7 @@ package pl.adriandefus.utilsproject.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
