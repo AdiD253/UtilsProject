@@ -4,9 +4,7 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.Observer
 import android.content.Context
 import io.reactivex.Observable
-import net.bytebuddy.matcher.StringMatcher
 import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.MatcherAssert
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Before
@@ -19,7 +17,6 @@ import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-import org.mockito.verification.VerificationMode
 import pl.adriandefus.utilsproject.model.LatLng
 import pl.adriandefus.utilsproject.model.PlaceQueryStatus
 import pl.adriandefus.utilsproject.model.ResponseStatus
@@ -27,6 +24,7 @@ import pl.adriandefus.utilsproject.model.SearchServiceResponse
 import pl.adriandefus.utilsproject.repository.GooglePlacesRepository
 import pl.adriandefus.utilsproject.ui.AnimationStatus
 import pl.adriandefus.utilsproject.ui.MainViewModel
+import pl.adriandefus.utilsproject.ui.Status
 import pl.adriandefus.utilsproject.util.*
 
 @RunWith(JUnit4::class)
@@ -59,6 +57,9 @@ class MainViewModelTest {
     @Captor
     private lateinit var placeQueryArgumentCaptor: ArgumentCaptor<PlaceQueryStatus>
 
+    @Captor
+    private lateinit var animationStatusArgumentCaptor: ArgumentCaptor<AnimationStatus>
+
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
@@ -84,10 +85,12 @@ class MainViewModelTest {
         mainViewModel.animationStatus.observeForever(observer)
 
         mainViewModel.toggleAnimation()
-        verify(observer).onChanged(mainViewModel.animationActive)
+        verify(observer).onChanged(animationStatusArgumentCaptor.capture())
+        assertThat(animationStatusArgumentCaptor.value.status, `is`(Status.ACTIVE))
 
         mainViewModel.toggleAnimation()
-        verify(observer).onChanged(mainViewModel.animationInactive)
+        verify(observer, atLeast(2)).onChanged(animationStatusArgumentCaptor.capture())
+        assertThat(animationStatusArgumentCaptor.value.status, `is`(Status.INACTIVE))
 
         mainViewModel.animationStatus.removeObserver(observer)
     }
@@ -96,7 +99,7 @@ class MainViewModelTest {
     fun `should get places information`() {
         `when`(googlePlacesRepository.searchForPlaces("foo", 1000, LatLng(0.0, 0.0)))
             .thenReturn(
-                Observable.just(SearchServiceResponse(results = null, status = "OK", errorMessage = null))
+                Observable.just(SearchServiceResponse(results = listOf(), status = "OK", errorMessage = null))
             )
         val observer = mock<Observer<PlaceQueryStatus>>()
 
@@ -104,10 +107,10 @@ class MainViewModelTest {
 
         mainViewModel.searchForPlace("foo", 1000, LatLng(0.0, 0.0))
 
-        verify(observer).onChanged(mainViewModel.placeQueryProgress)
-
-        verify(observer).onChanged(mainViewModel.placeQuerySuccess)
-        assertThat(mainViewModel.placeStatus.value?.responseStatus, `is`(ResponseStatus.SUCCESS))
+        verify(observer, atLeast(2)).onChanged(placeQueryArgumentCaptor.capture())
+        assertThat(placeQueryArgumentCaptor.allValues[0].responseStatus, `is`(ResponseStatus.IN_PROGRESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].responseStatus, `is`(ResponseStatus.SUCCESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].results, `is`(listOf()))
 
         mainViewModel.placeStatus.removeObserver(observer)
     }
@@ -130,11 +133,10 @@ class MainViewModelTest {
 
         mainViewModel.searchForPlace("foo", 1000, LatLng(0.0, 0.0))
 
-        verify(observer).onChanged(mainViewModel.placeQueryProgress)
-
-        verify(observer).onChanged(mainViewModel.placeQueryError)
-        assertThat(mainViewModel.placeStatus.value?.responseStatus, `is`(ResponseStatus.ERROR))
-        assertThat(mainViewModel.placeStatus.value?.error, `is`(instanceOf(PlaceSearchZeroResultError::class.java)))
+        verify(observer, atLeast(2)).onChanged(placeQueryArgumentCaptor.capture())
+        assertThat(placeQueryArgumentCaptor.allValues[0].responseStatus, `is`(ResponseStatus.IN_PROGRESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].responseStatus, `is`(ResponseStatus.ERROR))
+        assertThat(placeQueryArgumentCaptor.allValues[1].error, `is`(instanceOf(PlaceSearchZeroResultError::class.java)))
 
         mainViewModel.placeStatus.removeObserver(observer)
     }
@@ -157,9 +159,10 @@ class MainViewModelTest {
 
         mainViewModel.searchForPlace("foo", 1000, LatLng(0.0, 0.0))
 
-        verify(observer, atLeast(1)).onChanged(placeQueryArgumentCaptor.capture())
-        assertThat(placeQueryArgumentCaptor.value.responseStatus, `is`(ResponseStatus.ERROR))
-        assertThat(placeQueryArgumentCaptor.value.error, `is`(instanceOf(PlaceSearchOverQueryError::class.java)))
+        verify(observer, atLeast(2)).onChanged(placeQueryArgumentCaptor.capture())
+        assertThat(placeQueryArgumentCaptor.allValues[0].responseStatus, `is`(ResponseStatus.IN_PROGRESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].responseStatus, `is`(ResponseStatus.ERROR))
+        assertThat(placeQueryArgumentCaptor.allValues[1].error, `is`(instanceOf(PlaceSearchOverQueryError::class.java)))
 
         mainViewModel.placeStatus.removeObserver(observer)
     }
@@ -182,11 +185,10 @@ class MainViewModelTest {
 
         mainViewModel.searchForPlace("foo", 1000, LatLng(0.0, 0.0))
 
-        verify(observer).onChanged(mainViewModel.placeQueryProgress)
-
-        verify(observer).onChanged(mainViewModel.placeQueryError)
-        assertThat(mainViewModel.placeStatus.value?.responseStatus, `is`(ResponseStatus.ERROR))
-        assertThat(mainViewModel.placeStatus.value?.error, `is`(instanceOf(PlaceSearchRequestDeniedError::class.java)))
+        verify(observer, atLeast(2)).onChanged(placeQueryArgumentCaptor.capture())
+        assertThat(placeQueryArgumentCaptor.allValues[0].responseStatus, `is`(ResponseStatus.IN_PROGRESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].responseStatus, `is`(ResponseStatus.ERROR))
+        assertThat(placeQueryArgumentCaptor.allValues[1].error, `is`(instanceOf(PlaceSearchRequestDeniedError::class.java)))
 
         mainViewModel.placeStatus.removeObserver(observer)
     }
@@ -209,11 +211,10 @@ class MainViewModelTest {
 
         mainViewModel.searchForPlace("foo", 1000, LatLng(0.0, 0.0))
 
-        verify(observer).onChanged(mainViewModel.placeQueryProgress)
-
-        verify(observer).onChanged(mainViewModel.placeQueryError)
-        assertThat(mainViewModel.placeStatus.value?.responseStatus, `is`(ResponseStatus.ERROR))
-        assertThat(mainViewModel.placeStatus.value?.error, `is`(instanceOf(PlaceSearchInvalidRequestError::class.java)))
+        verify(observer, atLeast(2)).onChanged(placeQueryArgumentCaptor.capture())
+        assertThat(placeQueryArgumentCaptor.allValues[0].responseStatus, `is`(ResponseStatus.IN_PROGRESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].responseStatus, `is`(ResponseStatus.ERROR))
+        assertThat(placeQueryArgumentCaptor.allValues[1].error, `is`(instanceOf(PlaceSearchInvalidRequestError::class.java)))
 
         mainViewModel.placeStatus.removeObserver(observer)
     }
@@ -236,11 +237,10 @@ class MainViewModelTest {
 
         mainViewModel.searchForPlace("foo", 1000, LatLng(0.0, 0.0))
 
-        verify(observer).onChanged(mainViewModel.placeQueryProgress)
-
-        verify(observer).onChanged(mainViewModel.placeQueryError)
-        assertThat(mainViewModel.placeStatus.value?.responseStatus, `is`(ResponseStatus.ERROR))
-        assertThat(mainViewModel.placeStatus.value?.error, `is`(instanceOf(PlaceSearchUnknownError::class.java)))
+        verify(observer, atLeast(2)).onChanged(placeQueryArgumentCaptor.capture())
+        assertThat(placeQueryArgumentCaptor.allValues[0].responseStatus, `is`(ResponseStatus.IN_PROGRESS))
+        assertThat(placeQueryArgumentCaptor.allValues[1].responseStatus, `is`(ResponseStatus.ERROR))
+        assertThat(placeQueryArgumentCaptor.allValues[1].error, `is`(instanceOf(PlaceSearchUnknownError::class.java)))
 
         mainViewModel.placeStatus.removeObserver(observer)
     }

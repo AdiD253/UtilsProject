@@ -3,12 +3,16 @@ package pl.adriandefus.utilsproject
 import android.arch.lifecycle.Observer
 import android.support.test.espresso.matcher.ViewMatchers.assertThat
 import android.widget.Button
+import com.nhaarman.mockitokotlin2.atLeast
+import com.nhaarman.mockitokotlin2.atMost
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.isA
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
@@ -29,6 +33,9 @@ class MainActivityTest {
     @Mock
     private lateinit var observer: Observer<AnimationStatus>
 
+    @Captor
+    private lateinit var animationStatusArgumentCaptor: ArgumentCaptor<AnimationStatus>
+
     @Before
     fun before() {
         MockitoAnnotations.initMocks(this)
@@ -46,13 +53,13 @@ class MainActivityTest {
         val helloWorldBtn = activityController.get().findViewById<Button>(R.id.helloWorldButton)
         viewModel.animationStatus.observeForever(observer)
 
-        activityController.get().viewModel.toggleAnimation()
-        verify(observer).onChanged(viewModel.animationActive)
-        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(viewModel.animationActive.statusInfo))
+        helloWorldBtn.performClick()
+        verify(observer, atMost(1)).onChanged(animationStatusArgumentCaptor.capture())
+        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(animationStatusArgumentCaptor.value.statusInfo))
 
         helloWorldBtn.performClick()
-        verify(observer).onChanged(viewModel.animationInactive)
-        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(viewModel.animationInactive.statusInfo))
+        verify(observer, atLeast(2)).onChanged(animationStatusArgumentCaptor.capture())
+        assertThat(ShadowToast.getTextOfLatestToast(), equalTo(animationStatusArgumentCaptor.value.statusInfo))
     }
 
     @After

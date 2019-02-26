@@ -21,12 +21,12 @@ class MainViewModel @Inject constructor(
     val placesRepository: GooglePlacesRepository
 ) : ViewModel() {
 
-    val animationActive = AnimationStatus(ACTIVE, resourceProvider.strings.getAnimActive())
-    val animationInactive = AnimationStatus(INACTIVE, resourceProvider.strings.getAnimInactive())
+    private val animationActive = AnimationStatus(ACTIVE, resourceProvider.strings.getAnimActive())
+    private val animationInactive = AnimationStatus(INACTIVE, resourceProvider.strings.getAnimInactive())
 
-    val placeQuerySuccess = PlaceQueryStatus(ResponseStatus.SUCCESS)
-    val placeQueryError = PlaceQueryStatus(ResponseStatus.ERROR)
-    val placeQueryProgress = PlaceQueryStatus(ResponseStatus.IN_PROGRESS)
+    private val placeQuerySuccess = PlaceQueryStatus(ResponseStatus.SUCCESS)
+    private val placeQueryError = PlaceQueryStatus(ResponseStatus.ERROR)
+    private val placeQueryProgress = PlaceQueryStatus(ResponseStatus.IN_PROGRESS)
 
     private val _animationStatus = MutableLiveData<AnimationStatus>()
     val animationStatus: LiveData<AnimationStatus>
@@ -46,9 +46,7 @@ class MainViewModel @Inject constructor(
     fun searchForPlace(place: String, radius: Int, location: LatLng) {
         placesRepository.searchForPlaces(place, radius, location)
             .doOnSubscribe {
-                _placeStatus post PlaceQueryStatus(
-                    ResponseStatus.IN_PROGRESS
-                )
+                _placeStatus post placeQueryProgress
             }
             .handleRxPlaceSearchResponse()
             .subscribeBy(
